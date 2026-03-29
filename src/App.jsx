@@ -3,6 +3,11 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import RoleProtectedRoute from "./routes/RoleProtectedRoute";
+
+function ManageNodes() {
+  return <h2>Manage Nodes - Admin Only</h2>;
+}
 
 function App() {
   return (
@@ -16,6 +21,15 @@ function App() {
           </ProtectedRoute>} >
           <Route path="dashboard" element={<Dashboard />} />
         </Route>
+
+        <Route
+          path="nodes/manage"
+          element={
+            <RoleProtectedRoute allowedRoles={["Admin"]}>
+              <ManageNodes />
+            </RoleProtectedRoute>
+          }
+        />
 
       </Routes>
     </BrowserRouter>
