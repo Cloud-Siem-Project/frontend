@@ -90,7 +90,7 @@ function DashboardLayout() {
                         borderBottom: "1px solid #e2e8f0",
                     }}
                 >
-                    <h3 style={{ margin: 0 }}>Dashboard</h3>
+                    <h3 style={{ margin: 0 }}></h3>
 
                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                         <span>

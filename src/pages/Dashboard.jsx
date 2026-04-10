@@ -1,47 +1,20 @@
-const cardStyle = {
-    background: "white",
-    padding: "0px 10px",
-    borderRadius: "10px",
-    width: "200px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-};
-
-const cardNumber = {
-    fontSize: "28px",
-    fontWeight: "bold",
-    marginTop: "10px",
-};
+import SummaryCard from "../components/SummaryCard";
 
 function Dashboard() {
     return (
-        <div>
-            <h1 style={{ marginBottom: "20px" }}>Overview</h1>
-
-            <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-
-                <div style={cardStyle}>
-                    <h3>Total Nodes</h3>
-                    <p style={cardNumber}>12</p>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Online Nodes</h3>
-                    <p style={cardNumber}>10</p>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Offline Nodes</h3>
-                    <p style={cardNumber}>2</p>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Active Alerts</h3>
-                    <p style={cardNumber}>3</p>
-                </div>
-
-            </div>
+        <div style={summaryCardsWrapperStyle}>
+            <SummaryCard title="Total Nodes" value={12} />
+            <SummaryCard title="Online Nodes" value={10} color="#16a34a" />
+            <SummaryCard title="Offline Nodes" value={2} color="#dc2626" />
+            <SummaryCard title="Active Alerts" value={3} color="#d97706" />
         </div>
     );
 }
+
+const summaryCardsWrapperStyle = {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gap: "20px",
+};
 
 export default Dashboard;
