@@ -1,0 +1,29 @@
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-item {
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+  transition: background 0.2s ease, transform 0.2s ease;
+  display: block;
+}
+
+.sidebar-item:hover {
+  background: #334155;
+}
+
+.sidebar-item.active {
+  background: #475569;
+  font-weight: 600;
+}
+
+.sidebar-item.active:hover {
+  background: #475569;
+}
