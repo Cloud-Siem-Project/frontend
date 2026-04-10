@@ -10,7 +10,7 @@ CSS - Styling
 
 # Project Structure
 
-frontend/
+<pre>frontend/
 │── src/
 │   ├── components/      # Reusable UI components
 │   ├── pages/           # Main pages (Dashboard, Nodes, Alerts, etc.)
@@ -22,5 +22,5 @@ frontend/
 │
 │── public/              # Static public assets
 │── package.json         # Dependencies & scripts
-│── README.md            # Project documentation
+│── README.md            # Project documentation</pre>
 
