@@ -18,19 +18,21 @@ function App() {
         <Route element={
           <ProtectedRoute>
             <DashboardLayout />
-          </ProtectedRoute>} >
+          </ProtectedRoute>
+        }
+        >
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="nodes" element={<Dashboard />} />
+          <Route path="alerts" element={<Dashboard />} />
+          <Route
+            path="nodes/manage"
+            element={
+              <RoleProtectedRoute allowedRoles={["Admin"]}>
+                <ManageNodes />
+              </RoleProtectedRoute>
+            }
+          />
         </Route>
-
-        <Route
-          path="nodes/manage"
-          element={
-            <RoleProtectedRoute allowedRoles={["Admin"]}>
-              <ManageNodes />
-            </RoleProtectedRoute>
-          }
-        />
-
       </Routes>
     </BrowserRouter>
   )
