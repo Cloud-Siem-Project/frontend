@@ -62,7 +62,7 @@ function DashboardLayout() {
                     flexDirection: "column",
                 }}
             >
-                <h2 style={{ marginBottom: "30px" }}>Cloud SIEM</h2>
+                <h2 style={{ marginBottom: "30px" }}>AWSIEM</h2>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                     {menuItems.map((item) => (

@@ -25,7 +25,7 @@ function Login() {
 
     return (
         <div style={{ padding: "40px" }}>
-            <h2>Cloud SIEM Login</h2>
+            <h2>AWSIEM Login</h2>
             <p>Select a role for mock authentication:</p>
 
             <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
