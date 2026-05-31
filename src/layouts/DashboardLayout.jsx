@@ -1,6 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom"
-import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 import { NavLink } from "react-router-dom";
 
 const logoutButtonStyle = {
@@ -31,7 +30,6 @@ function DashboardLayout() {
     const navigate = useNavigate()
     const { user, logout } = useAuth();
     const isAdmin = user?.role === "Admin";
-    const [activeItem, setActiveItem] = useState("dashboard");
 
     const menuItems = [
         { label: "Dashboard", to: "/dashboard" },
