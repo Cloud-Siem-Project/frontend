@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import NetworkBackground from "../components/NetworkBackground";
 
 function Login() {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ function Login() {
 
   return (
     <div style={containerStyle}>
+      <NetworkBackground />
       <form onSubmit={handleSubmit} style={formStyle}>
         <h2 style={{ margin: "0 0 4px", color: "#1e293b", fontFamily: "'Ubuntu Mono', monospace", textAlign: "center", fontSize: "28px" }}>
           cloud loggers
@@ -70,17 +72,20 @@ const containerStyle = {
   justifyContent: "center",
   alignItems: "center",
   minHeight: "100vh",
-  background: "#f1f5f9",
+  background: "#0f172a",
 };
 
 const formStyle = {
-  background: "white",
+  position: "relative",
+  zIndex: 1,
+  background: "rgba(255, 255, 255, 0.95)",
   padding: "40px",
   borderRadius: "12px",
-  boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+  boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
   width: "360px",
   display: "flex",
   flexDirection: "column",
+  backdropFilter: "blur(8px)",
 };
 
 const labelStyle = {
