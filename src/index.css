@@ -4,6 +4,7 @@ body,
   width: 100%;
   min-height: 100vh;
   margin: 0;
+  font-family: 'Ubuntu', sans-serif;
 }
 
 *,
@@ -15,4 +16,9 @@ body,
 body {
   min-width: 320px;
   display: block;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+input, button, textarea, select {
+  font-family: 'Ubuntu', sans-serif;
 }
