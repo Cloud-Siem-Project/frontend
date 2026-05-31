@@ -4,6 +4,7 @@ const NODE_COUNT = 40;
 const CONNECTION_DISTANCE = 180;
 const BEAM_INTERVAL = 1200;
 const BEAM_SPEED = 4;
+const TRACE_FADE = 0.012;
 
 function NetworkBackground() {
   const canvasRef = useRef(null);
@@ -14,6 +15,7 @@ function NetworkBackground() {
     let animId;
     let nodes = [];
     let beams = [];
+    let traces = [];
     let lastBeamTime = 0;
 
     function resize() {
@@ -29,7 +31,7 @@ function NetworkBackground() {
           y: Math.random() * canvas.height,
           vx: (Math.random() - 0.5) * 0.4,
           vy: (Math.random() - 0.5) * 0.4,
-          radius: Math.random() * 2 + 1.5,
+          radius: Math.random() * 2 + 2.5,
         });
       }
     }
@@ -71,9 +73,25 @@ function NetworkBackground() {
       spawnBeam(time);
 
       for (const beam of beams) {
+        const from = nodes[beam.from];
+        const to = nodes[beam.to];
+        const prevProgress = beam.progress;
         beam.progress += BEAM_SPEED / 100;
+
+        traces.push({
+          x1: from.x + (to.x - from.x) * prevProgress,
+          y1: from.y + (to.y - from.y) * prevProgress,
+          x2: from.x + (to.x - from.x) * beam.progress,
+          y2: from.y + (to.y - from.y) * beam.progress,
+          opacity: 0.7,
+        });
       }
       beams = beams.filter((b) => b.progress <= 1);
+
+      for (const trace of traces) {
+        trace.opacity -= TRACE_FADE;
+      }
+      traces = traces.filter((t) => t.opacity > 0);
     }
 
     function draw() {
@@ -85,15 +103,24 @@ function NetworkBackground() {
           const dy = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < CONNECTION_DISTANCE) {
-            const opacity = (1 - dist / CONNECTION_DISTANCE) * 0.15;
+            const opacity = (1 - dist / CONNECTION_DISTANCE) * 0.4;
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(148, 163, 184, ${opacity})`;
-            ctx.lineWidth = 0.5;
+            ctx.strokeStyle = `rgba(200, 210, 220, ${opacity})`;
+            ctx.lineWidth = 1;
             ctx.stroke();
           }
         }
+      }
+
+      for (const trace of traces) {
+        ctx.beginPath();
+        ctx.moveTo(trace.x1, trace.y1);
+        ctx.lineTo(trace.x2, trace.y2);
+        ctx.strokeStyle = `rgba(56, 189, 248, ${trace.opacity})`;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
       }
 
       for (const beam of beams) {
@@ -102,36 +129,21 @@ function NetworkBackground() {
         const x = from.x + (to.x - from.x) * beam.progress;
         const y = from.y + (to.y - from.y) * beam.progress;
 
-        const tailProgress = Math.max(0, beam.progress - 0.15);
-        const tailX = from.x + (to.x - from.x) * tailProgress;
-        const tailY = from.y + (to.y - from.y) * tailProgress;
-
-        const gradient = ctx.createLinearGradient(tailX, tailY, x, y);
-        gradient.addColorStop(0, "rgba(56, 189, 248, 0)");
-        gradient.addColorStop(1, "rgba(56, 189, 248, 0.8)");
-
         ctx.beginPath();
-        ctx.moveTo(tailX, tailY);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(56, 189, 248, 0.9)";
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(56, 189, 248, 1)";
         ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(x, y, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(56, 189, 248, 0.2)";
+        ctx.arc(x, y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
         ctx.fill();
       }
 
       for (const node of nodes) {
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(100, 116, 139, 0.6)";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
         ctx.fill();
       }
     }

@@ -72,7 +72,7 @@ const containerStyle = {
   justifyContent: "center",
   alignItems: "center",
   minHeight: "100vh",
-  background: "#0f172a",
+  background: "#050505",
 };
 
 const formStyle = {
