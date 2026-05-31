@@ -1,208 +1,129 @@
+import { useEffect, useState } from "react";
 import SummaryCard from "../components/SummaryCard";
+import { fetchNodes } from "../api";
+
+function timeAgo(ts) {
+  if (!ts) return "—";
+  const delta = Math.floor(Date.now() / 1000 - ts);
+  if (delta < 60) return `${delta}s ago`;
+  if (delta < 3600) return `${Math.floor(delta / 60)}m ago`;
+  if (delta < 86400) return `${Math.floor(delta / 3600)}h ago`;
+  return `${Math.floor(delta / 86400)}d ago`;
+}
 
 function Nodes() {
-    const nodes = [
-        {
-            id: 1,
-            name: "web-server-01",
-            ip: "192.168.1.10",
-            status: "Up",
-            criticalRisks: 2,
-            securityScore: 85,
-            lastSeen: "2 minutes ago",
-            os: "Ubuntu 22.04",
-        },
-        {
-            id: 2,
-            name: "db-server-01",
-            ip: "192.168.1.20",
-            status: "Up",
-            criticalRisks: 0,
-            securityScore: 95,
-            lastSeen: "1 minute ago",
-            os: "CentOS 8",
-        },
-        {
-            id: 3,
-            name: "app-server-01",
-            ip: "192.168.1.30",
-            status: "Up",
-            criticalRisks: 5,
-            securityScore: 68,
-            lastSeen: "5 minutes ago",
-            os: "Ubuntu 20.04",
-        },
-        {
-            id: 4,
-            name: "backup-server-01",
-            ip: "192.168.1.40",
-            status: "Down",
-            criticalRisks: 0,
-            securityScore: 78,
-            lastSeen: "2 hours ago",
-            os: "Debian 11",
-        },
-        {
-            id: 5,
-            name: "mail-server-01",
-            ip: "192.168.1.50",
-            status: "Up",
-            criticalRisks: 1,
-            securityScore: 91,
-            lastSeen: "3 minutes ago",
-            os: "Ubuntu 22.04",
-        },
-    ];
+  const [nodes, setNodes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const totalNodes = nodes.length;
-    const onlineNodes = nodes.filter((node) => node.status === "Up").length;
-    const totalCriticalRisks = nodes.reduce(
-        (sum, node) => sum + node.criticalRisks,
-        0
-    );
+  useEffect(() => {
+    let mounted = true;
 
-    return (
-        <div>
-            <h1 style={{ marginBottom: "24px" }}>Nodes</h1>
+    async function load() {
+      try {
+        const data = await fetchNodes();
+        const list = typeof data === "object" && !Array.isArray(data)
+          ? Object.values(data)
+          : Array.isArray(data) ? data : [];
+        if (mounted) setNodes(list);
+      } catch {
+        // API may not be reachable
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
 
-            <div style={tableCardStyle}>
-                <div style={headerRowStyle}>
-                    <div>Node</div>
-                    <div>Status</div>
-                    <div>Critical Risks</div>
-                    <div>Security Score</div>
-                    <div>Last Seen</div>
-                    <div>OS</div>
+    load();
+    const interval = setInterval(load, 10000);
+    return () => { mounted = false; clearInterval(interval); };
+  }, []);
+
+  const totalNodes = nodes.length;
+  const onlineNodes = nodes.filter((n) => n.status === "UP").length;
+  const offlineNodes = totalNodes - onlineNodes;
+
+  return (
+    <div>
+      <h1 style={{ marginBottom: "24px" }}>Nodes</h1>
+
+      <div style={summaryCardsWrapperStyle}>
+        <SummaryCard title="Total Nodes" value={totalNodes} />
+        <SummaryCard title="Nodes Online" value={onlineNodes} color="#16a34a" />
+        <SummaryCard title="Nodes Offline" value={offlineNodes} color="#dc2626" />
+      </div>
+
+      <div style={tableCardStyle}>
+        {loading ? (
+          <div style={{ padding: "24px", color: "#64748b" }}>Loading...</div>
+        ) : nodes.length === 0 ? (
+          <div style={{ padding: "24px", color: "#64748b" }}>
+            No nodes registered. Workers will appear here once they connect to the master.
+          </div>
+        ) : (
+          <>
+            <div style={headerRowStyle}>
+              <div>Node</div>
+              <div>Status</div>
+              <div>Kernel</div>
+              <div>Worker Version</div>
+              <div>Last Seen</div>
+              <div>Registered</div>
+            </div>
+            {nodes.map((node) => (
+              <div key={node.node_id} style={dataRowStyle}>
+                <div>
+                  <div style={{ fontWeight: "600" }}>{node.hostname}</div>
+                  <div style={{ color: "#64748b", marginTop: "4px", fontSize: "12px" }}>{node.ip}</div>
                 </div>
-
-                {nodes.map((node) => (
-                    <div key={node.id} style={dataRowStyle}>
-                        <div>
-                            <div style={{ fontWeight: "600" }}>{node.name}</div>
-                            <div style={{ color: "#64748b", marginTop: "4px" }}>{node.ip}</div>
-                        </div>
-
-                        <div
-                            style={{
-                                color: node.status === "Up" ? "#16a34a" : "#dc2626",
-                                fontWeight: "500",
-                            }}
-                        >
-                            {node.status}
-                        </div>
-
-                        <div
-                            style={{
-                                color: node.criticalRisks > 0 ? "#dc2626" : "#64748b",
-                                fontWeight: "500",
-                            }}
-                        >
-                            {node.criticalRisks}
-                        </div>
-
-                        <div>
-                            <div style={scoreBarContainerStyle}>
-                                <div
-                                    style={{
-                                        ...scoreBarFillStyle,
-                                        width: `${node.securityScore}%`,
-                                        background:
-                                            node.securityScore >= 90
-                                                ? "#16a34a"
-                                                : node.securityScore >= 75
-                                                    ? "#d97706"
-                                                    : "#dc2626",
-                                    }}
-                                />
-                            </div>
-
-                            <div
-                                style={{
-                                    ...scoreBadgeStyle,
-                                    background:
-                                        node.securityScore >= 90
-                                            ? "#dcfce7"
-                                            : node.securityScore >= 75
-                                                ? "#fef3c7"
-                                                : "#fee2e2",
-                                    color:
-                                        node.securityScore >= 90
-                                            ? "#16a34a"
-                                            : node.securityScore >= 75
-                                                ? "#d97706"
-                                                : "#dc2626",
-                                }}
-                            >
-                                {node.securityScore}
-                            </div>
-                        </div>
-
-                        <div style={{ color: "#64748b" }}>{node.lastSeen}</div>
-                        <div style={{ color: "#64748b" }}>{node.os}</div>
-                    </div>
-                ))}
-            </div>
-
-            <div style={summaryCardsWrapperStyle}>
-                <SummaryCard title="Total Nodes" value={totalNodes} />
-                <SummaryCard title="Nodes Online" value={onlineNodes} color="#16a34a" />
-                <SummaryCard title="Critical Risks" value={totalCriticalRisks} color="#dc2626" />
-            </div>
-        </div>
-    );
+                <div
+                  style={{
+                    color: node.status === "UP" ? "#16a34a" : "#dc2626",
+                    fontWeight: "500",
+                  }}
+                >
+                  {node.status}
+                </div>
+                <div style={{ color: "#64748b", fontSize: "13px" }}>{node.kernel || "—"}</div>
+                <div style={{ color: "#64748b", fontSize: "13px" }}>{node.worker_version || "—"}</div>
+                <div style={{ color: "#64748b" }}>{timeAgo(node.last_heartbeat)}</div>
+                <div style={{ color: "#64748b", fontSize: "12px" }}>{node.registered_at || "—"}</div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 const tableCardStyle = {
-    background: "white",
-    borderRadius: "14px",
-    overflow: "hidden",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-    marginBottom: "24px",
+  background: "white",
+  borderRadius: "14px",
+  overflow: "hidden",
+  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+  marginTop: "24px",
 };
 
 const headerRowStyle = {
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr 1.2fr 1.8fr 1.4fr 1.4fr",
-    padding: "20px 24px",
-    background: "#f8fafc",
-    borderBottom: "1px solid #e2e8f0",
-    fontWeight: "700",
+  display: "grid",
+  gridTemplateColumns: "2fr 1fr 1.5fr 1.2fr 1.2fr 1.5fr",
+  padding: "20px 24px",
+  background: "#f8fafc",
+  borderBottom: "1px solid #e2e8f0",
+  fontWeight: "700",
 };
 
 const dataRowStyle = {
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr 1.2fr 1.8fr 1.4fr 1.4fr",
-    padding: "20px 24px",
-    borderBottom: "1px solid #e2e8f0",
-    alignItems: "center",
-};
-
-const scoreBarContainerStyle = {
-    width: "120px",
-    height: "8px",
-    background: "#e2e8f0",
-    borderRadius: "999px",
-    overflow: "hidden",
-    marginBottom: "8px",
-};
-
-const scoreBarFillStyle = {
-    height: "100%",
-    borderRadius: "999px",
-};
-
-const scoreBadgeStyle = {
-    display: "inline-block",
-    padding: "6px 12px",
-    borderRadius: "10px",
-    fontWeight: "600",
-    fontSize: "14px",
+  display: "grid",
+  gridTemplateColumns: "2fr 1fr 1.5fr 1.2fr 1.2fr 1.5fr",
+  padding: "20px 24px",
+  borderBottom: "1px solid #e2e8f0",
+  alignItems: "center",
 };
 
 const summaryCardsWrapperStyle = {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "20px",
+  display: "grid",
+  gridTemplateColumns: "repeat(3, 1fr)",
+  gap: "20px",
 };
 
 export default Nodes;
