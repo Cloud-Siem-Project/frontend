@@ -47,7 +47,7 @@ function DashboardLayout() {
     }
 
     return (
-        <div style={{ display: "flex", minHeight: "100vh", fontFamily: "Arial" }}>
+        <div style={{ display: "flex", minHeight: "100vh" }}>
 
             {/* Sidebar */}
             <div
