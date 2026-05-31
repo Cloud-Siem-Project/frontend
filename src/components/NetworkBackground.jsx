@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react";
 
 const NODE_COUNT = 40;
 const CONNECTION_DISTANCE = 180;
-const BEAM_INTERVAL = 1200;
-const BEAM_SPEED = 4;
-const TRACE_FADE = 0.012;
+const BEAM_INTERVAL = 600;
+const BEAM_SPEED = 8;
+const TRACE_FADE = 0.02;
+const MOUSE_RADIUS = 150;
+const MOUSE_FORCE = 2;
 
 function NetworkBackground() {
   const canvasRef = useRef(null);
@@ -17,10 +19,21 @@ function NetworkBackground() {
     let beams = [];
     let traces = [];
     let lastBeamTime = 0;
+    let mouse = { x: -9999, y: -9999 };
 
     function resize() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+    }
+
+    function handleMouseMove(e) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    }
+
+    function handleMouseLeave() {
+      mouse.x = -9999;
+      mouse.y = -9999;
     }
 
     function initNodes() {
@@ -54,20 +67,31 @@ function NetworkBackground() {
 
       if (pairs.length === 0) return;
       const [a, b] = pairs[Math.floor(Math.random() * pairs.length)];
-      beams.push({
-        from: a,
-        to: b,
-        progress: 0,
-      });
+      beams.push({ from: a, to: b, progress: 0 });
     }
 
     function update(time) {
       for (const node of nodes) {
+        const dx = node.x - mouse.x;
+        const dy = node.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < MOUSE_RADIUS && dist > 0) {
+          const force = (1 - dist / MOUSE_RADIUS) * MOUSE_FORCE;
+          node.vx += (dx / dist) * force;
+          node.vy += (dy / dist) * force;
+        }
+
+        node.vx *= 0.97;
+        node.vy *= 0.97;
+
         node.x += node.vx;
         node.y += node.vy;
 
         if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
         if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+        node.x = Math.max(0, Math.min(canvas.width, node.x));
+        node.y = Math.max(0, Math.min(canvas.height, node.y));
       }
 
       spawnBeam(time);
@@ -81,8 +105,8 @@ function NetworkBackground() {
         traces.push({
           x1: from.x + (to.x - from.x) * prevProgress,
           y1: from.y + (to.y - from.y) * prevProgress,
-          x2: from.x + (to.x - from.x) * beam.progress,
-          y2: from.y + (to.y - from.y) * beam.progress,
+          x2: from.x + (to.x - from.x) * Math.min(beam.progress, 1),
+          y2: from.y + (to.y - from.y) * Math.min(beam.progress, 1),
           opacity: 0.7,
         });
       }
@@ -158,10 +182,14 @@ function NetworkBackground() {
     initNodes();
     animId = requestAnimationFrame(loop);
     window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, []);
 
