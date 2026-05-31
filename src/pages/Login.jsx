@@ -28,9 +28,11 @@ function Login() {
   return (
     <div style={containerStyle}>
       <form onSubmit={handleSubmit} style={formStyle}>
-        <h2 style={{ margin: "0 0 8px", color: "#1e293b" }}>Cloud SIEM</h2>
-        <p style={{ margin: "0 0 24px", color: "#64748b", fontSize: "14px" }}>
-          Sign in to your account
+        <h2 style={{ margin: "0 0 4px", color: "#1e293b", fontFamily: "'Ubuntu Mono', monospace", textAlign: "center", fontSize: "28px" }}>
+          cloud loggers
+        </h2>
+        <p style={{ margin: "0 0 24px", color: "#64748b", fontSize: "13px", textAlign: "center" }}>
+          your eyes on the cloud
         </p>
 
         {error && <div style={errorStyle}>{error}</div>}
