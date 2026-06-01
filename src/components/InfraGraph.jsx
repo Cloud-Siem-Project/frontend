@@ -18,17 +18,22 @@ const STYLESHEET = [
       label: "data(label)",
       "text-valign": "bottom",
       "text-halign": "center",
-      "text-margin-y": 8,
-      "font-size": "11px",
+      "text-margin-y": 6,
+      "text-wrap": "wrap",
+      "text-max-width": "90px",
+      "line-height": 1.3,
+      "font-size": "10px",
       "font-family": "'Ubuntu', sans-serif",
-      color: "#94a3b8",
+      color: "#cbd5e1",
       "background-color": "data(color)",
-      width: 36,
-      height: 36,
+      width: 32,
+      height: 32,
       "border-width": 2,
       "border-color": "#1e293b",
-      "text-outline-color": "#0a0f1a",
-      "text-outline-width": 2,
+      "text-background-color": "#0a0f1a",
+      "text-background-opacity": 0.7,
+      "text-background-padding": "2px",
+      "text-background-shape": "roundrectangle",
     },
   },
   {
@@ -42,9 +47,9 @@ const STYLESHEET = [
   {
     selector: "node[type = 'master']",
     style: {
-      width: 48,
-      height: 48,
-      "font-size": "12px",
+      width: 44,
+      height: 44,
+      "font-size": "11px",
       "font-weight": "bold",
     },
   },
@@ -100,7 +105,7 @@ function buildElements(nodes) {
       elements.push({
         data: {
           id: node.node_id,
-          label: `${node.node_id}\n${node.ip || ""}`,
+          label: node.node_id,
           type: "ec2",
           color: TYPE_STYLES.ec2.color,
           status: node.status || "UP",
@@ -114,12 +119,12 @@ function buildElements(nodes) {
 
   const pipeline = [
     { id: "eventbridge", label: "EventBridge", type: "eventbridge" },
-    { id: "lambda-dns", label: "DNS Detector\nLambda", type: "lambda" },
-    { id: "lambda-persist", label: "Persist\nLambda", type: "lambda" },
-    { id: "dynamodb", label: "DynamoDB\nEvents", type: "dynamodb" },
-    { id: "s3-raw", label: "S3 Raw\nArchive", type: "s3" },
-    { id: "cloudfront", label: "CloudFront\nDistribution", type: "cloudfront" },
-    { id: "s3-dashboard", label: "S3 Dashboard\nBucket", type: "s3" },
+    { id: "lambda-dns", label: "DNS Detector", type: "lambda" },
+    { id: "lambda-persist", label: "Persist Lambda", type: "lambda" },
+    { id: "dynamodb", label: "DynamoDB Events", type: "dynamodb" },
+    { id: "s3-raw", label: "S3 Raw Archive", type: "s3" },
+    { id: "cloudfront", label: "CloudFront", type: "cloudfront" },
+    { id: "s3-dashboard", label: "S3 Dashboard", type: "s3" },
   ];
 
   for (const p of pipeline) {
