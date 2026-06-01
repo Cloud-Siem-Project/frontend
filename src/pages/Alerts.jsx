@@ -3,17 +3,17 @@ import WorldMap, { AWS_REGIONS } from "../components/WorldMap";
 import { fetchEvents } from "../api";
 
 const INFRA_RESOURCES = [
-  { id: "master", type: "ec2", label: "Master EC2", coords: AWS_REGIONS["eu-central-1"].coords, region: "eu-central-1" },
-  { id: "worker-al2023", type: "ec2", label: "Worker AL2023", coords: [9.2, 49.5], region: "eu-central-1" },
-  { id: "worker-debian", type: "ec2", label: "Worker Debian", coords: [8.0, 50.8], region: "eu-central-1" },
-  { id: "worker-ubuntu", type: "ec2", label: "Worker Ubuntu", coords: [10.0, 50.5], region: "eu-central-1" },
+  { id: "master", type: "ec2", label: "Master EC2", coords: [8.7, 50.1], region: "eu-central-1" },
+  { id: "worker-al2023", type: "ec2", label: "Worker AL2023", coords: [14, 47], region: "eu-central-1" },
+  { id: "worker-debian", type: "ec2", label: "Worker Debian", coords: [2, 48.5], region: "eu-central-1" },
+  { id: "worker-ubuntu", type: "ec2", label: "Worker Ubuntu", coords: [12, 53], region: "eu-central-1" },
   { id: "cloudfront", type: "cloudfront", label: "CloudFront", coords: AWS_REGIONS["us-east-1"].coords, region: "us-east-1" },
-  { id: "s3-dashboard", type: "s3", label: "Dashboard S3", coords: [9.5, 51.5], region: "eu-central-1" },
-  { id: "eventbridge", type: "eventbridge", label: "EventBridge", coords: [7.5, 49.0], region: "eu-central-1" },
-  { id: "lambda-dns", type: "lambda", label: "DNS Detector", coords: [10.5, 49.0], region: "eu-central-1" },
-  { id: "lambda-persist", type: "lambda", label: "Persist", coords: [11.0, 50.0], region: "eu-central-1" },
-  { id: "dynamodb", type: "dynamodb", label: "DynamoDB Events", coords: [7.0, 50.5], region: "eu-central-1" },
-  { id: "s3-raw", type: "s3", label: "Raw Archive", coords: [6.5, 49.5], region: "eu-central-1" },
+  { id: "s3-dashboard", type: "s3", label: "Dashboard S3", coords: [-3, 53], region: "eu-central-1" },
+  { id: "eventbridge", type: "eventbridge", label: "EventBridge", coords: [-1, 44], region: "eu-central-1" },
+  { id: "lambda-dns", type: "lambda", label: "DNS Detector", coords: [17, 51], region: "eu-central-1" },
+  { id: "lambda-persist", type: "lambda", label: "Persist", coords: [20, 46], region: "eu-central-1" },
+  { id: "dynamodb", type: "dynamodb", label: "DynamoDB Events", coords: [-5, 40], region: "eu-central-1" },
+  { id: "s3-raw", type: "s3", label: "Raw Archive", coords: [-8, 47], region: "eu-central-1" },
   { id: "cloudfront-edge-us", type: "cloudfront", label: "CF Edge US-W", coords: AWS_REGIONS["us-west-2"].coords, region: "us-west-2" },
   { id: "cloudfront-edge-ap", type: "cloudfront", label: "CF Edge AP", coords: AWS_REGIONS["ap-southeast-1"].coords, region: "ap-southeast-1" },
 ];
