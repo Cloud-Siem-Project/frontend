@@ -16,11 +16,11 @@ function Dashboard() {
           ? Object.values(data)
           : Array.isArray(data) ? data : [];
         if (mounted) setNodes(list);
-      } catch {}
+      } catch { /* API may be unreachable */ }
       try {
         const evts = await fetchEvents();
         if (mounted) setEvents(evts);
-      } catch {}
+      } catch { /* API may be unreachable */ }
     }
 
     load();
