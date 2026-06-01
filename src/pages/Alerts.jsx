@@ -1,37 +1,6 @@
 import { useEffect, useState } from "react";
-import WorldMap, { AWS_REGIONS } from "../components/WorldMap";
-import { fetchEvents } from "../api";
-
-const INFRA_RESOURCES = [
-  { id: "master", type: "ec2", label: "Master EC2", coords: [8.7, 50.1], region: "eu-central-1" },
-  { id: "worker-al2023", type: "ec2", label: "Worker AL2023", coords: [14, 47], region: "eu-central-1" },
-  { id: "worker-debian", type: "ec2", label: "Worker Debian", coords: [2, 48.5], region: "eu-central-1" },
-  { id: "worker-ubuntu", type: "ec2", label: "Worker Ubuntu", coords: [12, 53], region: "eu-central-1" },
-  { id: "cloudfront", type: "cloudfront", label: "CloudFront", coords: AWS_REGIONS["us-east-1"].coords, region: "us-east-1" },
-  { id: "s3-dashboard", type: "s3", label: "Dashboard S3", coords: [-3, 53], region: "eu-central-1" },
-  { id: "eventbridge", type: "eventbridge", label: "EventBridge", coords: [-1, 44], region: "eu-central-1" },
-  { id: "lambda-dns", type: "lambda", label: "DNS Detector", coords: [17, 51], region: "eu-central-1" },
-  { id: "lambda-persist", type: "lambda", label: "Persist", coords: [20, 46], region: "eu-central-1" },
-  { id: "dynamodb", type: "dynamodb", label: "DynamoDB Events", coords: [-5, 40], region: "eu-central-1" },
-  { id: "s3-raw", type: "s3", label: "Raw Archive", coords: [-8, 47], region: "eu-central-1" },
-  { id: "cloudfront-edge-us", type: "cloudfront", label: "CF Edge US-W", coords: AWS_REGIONS["us-west-2"].coords, region: "us-west-2" },
-  { id: "cloudfront-edge-ap", type: "cloudfront", label: "CF Edge AP", coords: AWS_REGIONS["ap-southeast-1"].coords, region: "ap-southeast-1" },
-];
-
-const INFRA_CONNECTIONS = [
-  { from: "cloudfront", to: "s3-dashboard" },
-  { from: "cloudfront", to: "master" },
-  { from: "cloudfront-edge-us", to: "cloudfront" },
-  { from: "cloudfront-edge-ap", to: "cloudfront" },
-  { from: "worker-al2023", to: "master" },
-  { from: "worker-debian", to: "master" },
-  { from: "worker-ubuntu", to: "master" },
-  { from: "eventbridge", to: "lambda-dns" },
-  { from: "eventbridge", to: "s3-raw" },
-  { from: "lambda-dns", to: "lambda-persist" },
-  { from: "lambda-persist", to: "dynamodb" },
-  { from: "master", to: "eventbridge" },
-];
+import InfraGraph from "../components/InfraGraph";
+import { fetchEvents, fetchNodes } from "../api";
 
 function timeAgo(iso) {
   if (!iso) return "";
@@ -55,6 +24,7 @@ function severityColor(severity) {
 
 function Alerts() {
   const [events, setEvents] = useState([]);
+  const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -64,11 +34,15 @@ function Alerts() {
       try {
         const data = await fetchEvents();
         if (mounted) setEvents(data);
-      } catch {
-        // API may not be available yet
-      } finally {
-        if (mounted) setLoading(false);
-      }
+      } catch { /* API may not be available */ }
+      try {
+        const nodeData = await fetchNodes();
+        const list = typeof nodeData === "object" && !Array.isArray(nodeData)
+          ? Object.values(nodeData)
+          : Array.isArray(nodeData) ? nodeData : [];
+        if (mounted) setNodes(list);
+      } catch { /* API may not be available */ }
+      if (mounted) setLoading(false);
     }
 
     load();
@@ -79,10 +53,10 @@ function Alerts() {
   return (
     <div>
       <h2 style={{ margin: "0 0 16px", color: "#1e293b", fontSize: "20px" }}>
-        Infrastructure Map
+        Infrastructure Graph
       </h2>
 
-      <WorldMap resources={INFRA_RESOURCES} connections={INFRA_CONNECTIONS} />
+      <InfraGraph nodes={nodes} />
 
       <h3 style={{ margin: "32px 0 12px", color: "#1e293b", fontSize: "16px" }}>
         Event Log
