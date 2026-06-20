@@ -33,18 +33,11 @@
 }
 .brand-logo {
   display: block;
-  height: 56px;
+  height: 84px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
   opacity: 0.96;
-}
-.brand-sub {
-  font-size: 11.5px;
-  font-style: italic;
-  color: var(--ink-faint);
-  margin-top: 10px;
-  letter-spacing: 0.01em;
 }
 
 /* shared icon tile — used on the login card */
@@ -500,7 +493,7 @@
 @media (max-width: 860px) {
   .stat-grid.cols-4, .stat-grid.cols-3 { grid-template-columns: 1fr 1fr; }
   .sidebar { width: 72px; }
-  .brand-logo, .brand-sub, .nav-group-label, .sidebar-item span,
+  .brand-logo, .nav-group-label, .sidebar-item span,
   .sidebar-foot { display: none; }
   .sidebar-item { justify-content: center; padding: 12px 0; }
   .content { padding: 20px 16px 40px; }

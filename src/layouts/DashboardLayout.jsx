@@ -40,7 +40,6 @@ function DashboardLayout() {
       <aside className="sidebar">
         <div className="brand">
           <img src={centinelLogo} alt="Centinel" className="brand-logo" />
-          <div className="brand-sub">your eyes on the cloud</div>
         </div>
 
         <nav className="nav-group">
