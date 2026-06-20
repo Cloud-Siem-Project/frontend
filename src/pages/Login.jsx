@@ -31,26 +31,22 @@ function Login() {
       <NetworkBackground />
       <div className="login-scrim" />
 
-      <form onSubmit={handleSubmit} className="panel bracket login-card reveal d1">
-        <span className="sweep" />
-
+      <form onSubmit={handleSubmit} className="panel login-card reveal d1">
         <div className="login-brand">
           <div className="brand-glyph" style={{ width: 44, height: 44 }}>
             <IconShield size={24} />
           </div>
           <div>
-            <div className="login-title">CLOUDGUARD DNS</div>
-            <div className="login-tag">// threat monitoring console</div>
+            <div className="login-title">Centinel</div>
+            <div className="login-tag">your eyes on the cloud</div>
           </div>
         </div>
 
-        <div className="login-divider">
-          <span className="eyebrow">Secure Access</span>
-        </div>
+        <div className="login-divider" />
 
         {error && <div className="login-error mono">⚠ {error}</div>}
 
-        <label className="field-label">Operator ID</label>
+        <label className="field-label">Username</label>
         <input
           type="text"
           value={username}
@@ -61,7 +57,7 @@ function Login() {
           required
         />
 
-        <label className="field-label">Access Key</label>
+        <label className="field-label">Password</label>
         <input
           type="password"
           value={password}
@@ -73,13 +69,8 @@ function Login() {
         />
 
         <button type="submit" disabled={loading} className="btn btn-accent login-submit">
-          {loading ? "Authenticating…" : "Initialize Session →"}
+          {loading ? "Logging in…" : "Login"}
         </button>
-
-        <div className="login-foot mono">
-          <span>SESSION ENCRYPTED</span>
-          <span style={{ color: "var(--ok)" }}>● LINK READY</span>
-        </div>
       </form>
     </div>
   );

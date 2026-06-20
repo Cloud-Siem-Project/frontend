@@ -251,13 +251,13 @@ function NetworkBackground() {
         }
       }
 
-      ctx.font = "9px 'Ubuntu Mono', monospace";
+      ctx.font = "9px 'IBM Plex Mono', monospace";
       ctx.textAlign = "center";
       for (const trace of traces) {
         const mx = (trace.x1 + trace.x2) / 2;
         const my = (trace.y1 + trace.y2) / 2;
         const bit = Math.random() > 0.5 ? "1" : "0";
-        ctx.fillStyle = `rgba(56, 189, 248, ${trace.opacity})`;
+        ctx.fillStyle = `rgba(190, 196, 204, ${trace.opacity})`;
         ctx.fillText(bit, mx, my);
       }
 
@@ -269,12 +269,12 @@ function NetworkBackground() {
 
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(56, 189, 248, 1)";
+        ctx.fillStyle = "rgba(214, 219, 226, 0.95)";
         ctx.fill();
 
         ctx.beginPath();
         ctx.arc(x, y, 7, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(56, 189, 248, 0.2)";
+        ctx.fillStyle = "rgba(190, 196, 204, 0.18)";
         ctx.fill();
       }
 

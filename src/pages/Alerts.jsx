@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import InfraGraph from "../components/InfraGraph";
 import { fetchEvents, fetchNodes } from "../api";
-import { normSeverity, sevClass, sevColor, timeAgoISO, clockISO } from "../utils/format";
+import { normSeverity, sevClass, sevColor, timeAgoISO, clockISO, prettySignal } from "../utils/format";
 
 const FILTERS = [
   { key: "ALL", label: "All", match: () => true },
   { key: "HIGH", label: "High", match: (s) => s === "HIGH" },
   { key: "MED", label: "Med", match: (s) => s === "MED" },
-  { key: "HM", label: "High+Med", match: (s) => s === "HIGH" || s === "MED" },
 ];
 
 function Alerts() {
@@ -140,7 +139,7 @@ function Alerts() {
                       <td>
                         <div style={{ display: "flex", gap: 5, flexWrap: "wrap", maxWidth: 280 }}>
                           {signals.length
-                            ? signals.slice(0, 4).map((s, j) => <span className="chip" key={j}>{s}</span>)
+                            ? signals.slice(0, 4).map((s, j) => <span className="chip" key={j}>{prettySignal(s)}</span>)
                             : <span className="faint">—</span>}
                         </div>
                       </td>

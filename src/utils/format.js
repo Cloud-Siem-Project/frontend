@@ -56,3 +56,17 @@ export function clockISO(iso) {
   if (Number.isNaN(d.getTime())) return "";
   return d.toISOString().slice(11, 19) + " UTC";
 }
+
+// Reshape a raw signal token into a readable chip:
+//   "label_len_med:34"  -> "label_len: 34 (med)"
+//   "entropy_med:3.92"  -> "entropy: 3.92 (med)"
+//   "suspicious_tld:xyz" -> "suspicious_tld: xyz"  (no level → just spaced)
+export function prettySignal(s) {
+  if (typeof s !== "string") return s;
+  const leveled = s.match(/^(.*)_(high|med|low):(.*)$/i);
+  if (leveled) {
+    return `${leveled[1]}: ${leveled[3]} (${leveled[2].toLowerCase()})`;
+  }
+  const i = s.indexOf(":");
+  return i === -1 ? s : `${s.slice(0, i)}: ${s.slice(i + 1)}`;
+}
