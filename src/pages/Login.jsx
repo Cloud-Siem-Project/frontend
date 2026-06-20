@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import NetworkBackground from "../components/NetworkBackground";
 import centinelLogo from "../assets/centinel.svg";
@@ -33,10 +33,10 @@ function Login() {
 
       <form onSubmit={handleSubmit} className="panel login-card reveal d1">
         <div className="login-brand">
-          <div className="login-logo-wrap">
+          <Link to="/" className="login-logo-wrap">
             <img src={centinelLogo} alt="Centinel" className="login-logo" />
             <span className="logo-star" aria-hidden="true" />
-          </div>
+          </Link>
         </div>
 
         <div className="login-divider" />
