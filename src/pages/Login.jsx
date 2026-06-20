@@ -37,7 +37,6 @@ function Login() {
             <img src={centinelLogo} alt="Centinel" className="login-logo" />
             <span className="logo-star" aria-hidden="true" />
           </div>
-          <div className="login-tag">your eyes on the cloud</div>
         </div>
 
         <div className="login-divider" />
