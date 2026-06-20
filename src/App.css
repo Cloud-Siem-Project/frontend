@@ -289,9 +289,9 @@
 .login-card {
   position: relative;
   z-index: 2;
-  width: 400px;
+  width: 340px;
   max-width: calc(100vw - 32px);
-  padding: 34px 34px 30px;
+  padding: 28px 28px 26px;
   background: var(--panel);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
 }
@@ -388,7 +388,7 @@
   .login-logo-wrap:hover .logo-star { animation: none; }
 }
 .login-divider {
-  margin: 24px 0 20px;
+  margin: 18px 0 16px;
   border-top: 1px solid var(--line);
 }
 .login-error {
