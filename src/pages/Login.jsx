@@ -33,7 +33,10 @@ function Login() {
 
       <form onSubmit={handleSubmit} className="panel login-card reveal d1">
         <div className="login-brand">
-          <img src={centinelLogo} alt="Centinel" className="login-logo" />
+          <div className="login-logo-wrap">
+            <img src={centinelLogo} alt="Centinel" className="login-logo" />
+            <span className="logo-star" aria-hidden="true" />
+          </div>
           <div className="login-tag">your eyes on the cloud</div>
         </div>
 
