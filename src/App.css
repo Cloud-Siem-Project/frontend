@@ -311,6 +311,9 @@
   position: relative;
   width: 120%;
   margin-top: -40%;
+  /* the SVG has empty space below the wordmark — pull the form up to close
+     the gap to USERNAME without changing the logo itself */
+  margin-bottom: -16%;
   display: block;
   cursor: pointer;
   transform: scale(1);
@@ -388,7 +391,7 @@
   .login-logo-wrap:hover .logo-star { animation: none; }
 }
 .login-divider {
-  margin: 18px 0 16px;
+  margin: 8px 0 14px;
   border-top: 1px solid var(--line);
 }
 .login-error {
