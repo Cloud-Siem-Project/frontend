@@ -1,111 +1,130 @@
-import { Outlet, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { NavLink } from "react-router-dom";
+import {
+  IconRadar,
+  IconNodes,
+  IconAlert,
+  IconGear,
+  IconPower,
+  IconShield,
+} from "../components/icons";
 
-const logoutButtonStyle = {
-    padding: "6px 12px",
-    borderRadius: "6px",
-    border: "none",
-    background: "#ef4444",
-    color: "white",
-    cursor: "pointer",
-};
+function SidebarItem({ label, to, icon }) {
+  return (
+    <NavLink
+      to={to}
+      end
+      className={({ isActive }) => (isActive ? "sidebar-item active" : "sidebar-item")}
+    >
+      <span className="si-icon">{icon}</span>
+      <span>{label}</span>
+    </NavLink>
+  );
+}
 
-
-function SidebarItem({ label, to, end = false }) {
-    return (
-        <NavLink
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-                isActive ? "sidebar-item active" : "sidebar-item"
-            }
-        >
-            {label}
-        </NavLink>
-    );
+function useClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return now;
 }
 
 function DashboardLayout() {
-    const navigate = useNavigate()
-    const { user, logout } = useAuth();
-    const isAdmin = user?.role === "Admin";
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const isAdmin = user?.role === "Admin";
+  const now = useClock();
 
-    const menuItems = [
-        { label: "Dashboard", to: "/dashboard" },
-        { label: "Nodes", to: "/nodes" },
-        { label: "Alerts", to: "/alerts" },
-    ];
+  const utc = now.toISOString().slice(11, 19);
+  const initials = (user?.username || "?").slice(0, 2).toUpperCase();
 
-    const adminItems = [
-        { label: "Manage Nodes", to: "/nodes/manage" },
-    ];
+  function handleLogout() {
+    logout();
+    navigate("/");
+  }
 
-    function handleLogout() {
-        logout();
-        navigate("/")
-    }
-
-    return (
-        <div style={{ display: "flex", minHeight: "100vh" }}>
-
-            {/* Sidebar */}
-            <div
-                style={{
-                    width: "240px",
-                    background: "#1e293b",
-                    color: "white",
-                    padding: "0px 20px",
-                    display: "flex",
-                    flexDirection: "column",
-                }}
-            >
-                <h2 style={{ marginBottom: "30px" }}>Cloud SIEM</h2>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                    {menuItems.map((item) => (
-                        <SidebarItem key={item.to} label={item.label} to={item.to} end={true} />
-                    ))}
-
-                    {isAdmin &&
-                        adminItems.map((item) => (
-                            <SidebarItem key={item.to} label={item.label} to={item.to} end={true} />
-                        ))}
-                </div>
+  return (
+    <div className="shell">
+      {/* ---------- sidebar ---------- */}
+      <aside className="sidebar">
+        <div className="brand">
+          <div className="brand-mark">
+            <div className="brand-glyph">
+              <IconShield size={19} />
             </div>
-
-            {/* Main Area */}
-            <div style={{ flex: 1, background: "#f1f5f9" }}>
-
-                {/* Topbar */}
-                <div
-                    style={{
-                        background: "white",
-                        padding: "16px 24px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        borderBottom: "1px solid #e2e8f0",
-                    }}
-                >
-                    <h3 style={{ margin: 0 }}></h3>
-
-                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                        <span>
-                            {user?.username} ({user?.role})
-                        </span>
-                        <button style={logoutButtonStyle} onClick={handleLogout}>
-                            Logout
-                        </button>
-                    </div>
-                </div>
-
-                <div style={{ padding: "24px" }}>
-                    <Outlet />
-                </div>
+            <div>
+              <div className="brand-name">CLOUDGUARD</div>
+              <div className="brand-sub">DNS Threat Console</div>
             </div>
+          </div>
         </div>
-    );
+
+        <nav className="nav-group">
+          <div className="nav-group-label">Operations</div>
+          <SidebarItem label="Overview" to="/dashboard" icon={<IconRadar />} />
+          <SidebarItem label="Nodes" to="/nodes" icon={<IconNodes />} />
+          <SidebarItem label="Alerts" to="/alerts" icon={<IconAlert />} />
+          {isAdmin && (
+            <>
+              <div className="nav-group-label" style={{ paddingTop: 16 }}>
+                Admin
+              </div>
+              <SidebarItem label="Manage Nodes" to="/nodes/manage" icon={<IconGear />} />
+            </>
+          )}
+        </nav>
+
+        <div className="sidebar-foot">
+          <div className="row">
+            <span>REGION</span>
+            <span style={{ color: "var(--ink-dim)" }}>eu-central-1</span>
+          </div>
+          <div className="row">
+            <span>PIPELINE</span>
+            <span style={{ color: "var(--ok)" }}>● ARMED</span>
+          </div>
+        </div>
+      </aside>
+
+      {/* ---------- main ---------- */}
+      <div className="main">
+        <header className="topbar">
+          <div className="topbar-left">
+            <span className="live-tag">
+              <span className="status-dot" />
+              LIVE
+            </span>
+            <span className="faint mono" style={{ fontSize: 11, letterSpacing: "0.1em" }}>
+              583164063950
+            </span>
+          </div>
+
+          <div className="topbar-right">
+            <span className="clock">{utc} UTC</span>
+            <div className="user-chip">
+              <div className="user-avatar">{initials}</div>
+              <div style={{ lineHeight: 1.2 }}>
+                <div style={{ color: "var(--ink)" }}>{user?.username}</div>
+                <div className="role-tag">{user?.role}</div>
+              </div>
+            </div>
+            <button className="btn btn-danger" onClick={handleLogout}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
+                <IconPower size={14} /> Logout
+              </span>
+            </button>
+          </div>
+        </header>
+
+        <main className="content">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
 }
 
-export default DashboardLayout
+export default DashboardLayout;

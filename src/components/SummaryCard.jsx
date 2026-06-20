@@ -1,35 +1,21 @@
-function SummaryCard({ title, value, color = "#0f172a" }) {
-    return (
-        <div style={cardStyle}>
-            <div style={titleStyle}>{title}</div>
+// HUD telemetry tile. backwards-compatible props (title, value, color)
+// plus optional sub, icon, and accent for the bracket/glow tint.
 
-            <div style={{ ...valueStyle, color }}>
-                {value}
-            </div>
-        </div>
-    );
+function SummaryCard({ title, value, color = "var(--ink)", sub, icon, accent }) {
+  const tint = accent || color;
+  return (
+    <div className="panel bracket stat-card" style={{ "--tint": tint }}>
+      <div className="stat-top">
+        <span className="eyebrow">{title}</span>
+        {icon && <span className="stat-icon" style={{ color: tint }}>{icon}</span>}
+      </div>
+      <div className="stat-value" style={{ color }}>
+        {value}
+      </div>
+      {sub && <div className="stat-sub">{sub}</div>}
+      <span className="stat-bar" style={{ background: tint }} />
+    </div>
+  );
 }
-
-const cardStyle = {
-    background: "white",
-    borderRadius: "14px",
-    padding: "20px",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-    minHeight: "100px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-};
-
-const titleStyle = {
-    fontSize: "14px",
-    color: "#64748b",
-    fontWeight: "500",
-};
-
-const valueStyle = {
-    fontSize: "28px",
-    fontWeight: "700",
-};
 
 export default SummaryCard;

@@ -1,35 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import InfraGraph from "../components/InfraGraph";
 import { fetchEvents, fetchNodes } from "../api";
+import { normSeverity, sevClass, sevColor, timeAgoISO, clockISO } from "../utils/format";
 
-function timeAgo(iso) {
-  if (!iso) return "";
-  const then = new Date(iso).getTime();
-  const delta = Math.floor((Date.now() - then) / 1000);
-  if (delta < 60) return `${delta}s ago`;
-  if (delta < 3600) return `${Math.floor(delta / 60)}m ago`;
-  if (delta < 86400) return `${Math.floor(delta / 3600)}h ago`;
-  return `${Math.floor(delta / 86400)}d ago`;
-}
-
-function severityColor(severity) {
-  switch (severity?.toUpperCase()) {
-    case "CRITICAL": return "#ef4444";
-    case "HIGH": return "#f97316";
-    case "MEDIUM": case "MED": return "#eab308";
-    case "LOW": return "#22c55e";
-    default: return "#64748b";
-  }
-}
+const FILTERS = [
+  { key: "ALL", label: "All", match: () => true },
+  { key: "HIGH", label: "High", match: (s) => s === "HIGH" },
+  { key: "MED", label: "Med", match: (s) => s === "MED" },
+  { key: "HM", label: "High+Med", match: (s) => s === "HIGH" || s === "MED" },
+];
 
 function Alerts() {
   const [events, setEvents] = useState([]);
   const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("ALL");
 
   useEffect(() => {
     let mounted = true;
-
     async function load() {
       try {
         const data = await fetchEvents();
@@ -44,104 +32,128 @@ function Alerts() {
       } catch { /* API may not be available */ }
       if (mounted) setLoading(false);
     }
-
     load();
     const interval = setInterval(load, 10000);
     return () => { mounted = false; clearInterval(interval); };
   }, []);
 
+  const active = FILTERS.find((f) => f.key === filter) || FILTERS[0];
+
+  const rows = useMemo(() => {
+    return [...events]
+      .sort((a, b) => new Date(b.event_time || 0) - new Date(a.event_time || 0))
+      .filter((e) => active.match(normSeverity(e.severity)))
+      .slice(0, 80);
+  }, [events, active]);
+
   return (
     <div>
-      <h2 style={{ margin: "0 0 16px", color: "#1e293b", fontSize: "20px" }}>
-        Infrastructure Graph
-      </h2>
+      <div className="page-head reveal d1">
+        <div>
+          <div className="eyebrow">Operations / Detection</div>
+          <h1 className="page-title">Alerts &amp; Topology</h1>
+        </div>
+        <span className="faint mono" style={{ fontSize: 11 }}>r53 qlog → score → respond</span>
+      </div>
 
-      <InfraGraph nodes={nodes} />
+      {/* infra topology */}
+      <div className="panel bracket reveal d2" style={{ overflow: "hidden", marginBottom: 18 }}>
+        <div className="panel-head">
+          <h3>Live Infrastructure Graph</h3>
+          <span className="faint mono" style={{ fontSize: 11 }}>scroll · zoom &nbsp;|&nbsp; drag · pan</span>
+        </div>
+        <InfraGraph nodes={nodes} />
+      </div>
 
-      <h3 style={{ margin: "32px 0 12px", color: "#1e293b", fontSize: "16px" }}>
-        Event Log
-      </h3>
+      {/* event log */}
+      <div className="panel bracket reveal d3" style={{ overflow: "hidden" }}>
+        <div className="panel-head">
+          <h3>Threat Event Log</h3>
+          <div className="seg">
+            {FILTERS.map((f) => (
+              <button
+                key={f.key}
+                className={filter === f.key ? "on" : ""}
+                onClick={() => setFilter(f.key)}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-      <div style={tableWrapperStyle}>
-        <table style={tableStyle}>
-          <thead>
-            <tr>
-              <th style={thStyle}>Time</th>
-              <th style={thStyle}>Severity</th>
-              <th style={thStyle}>Source</th>
-              <th style={thStyle}>Event</th>
-              <th style={thStyle}>Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={5} style={tdStyle}>Loading events...</td></tr>
-            ) : events.length === 0 ? (
-              <tr><td colSpan={5} style={tdStyle}>No events recorded yet. Pipeline events will appear here in real time.</td></tr>
-            ) : (
-              events.slice(0, 50).map((event, i) => (
-                <tr key={event.event_id || i} style={i % 2 === 0 ? rowEvenStyle : {}}>
-                  <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>{timeAgo(event.event_time || event.timestamp)}</td>
-                  <td style={tdStyle}>
-                    <span style={{ ...severityBadge, background: severityColor(event.severity) }}>
-                      {event.severity || "info"}
-                    </span>
-                  </td>
-                  <td style={tdStyle}>{event.source || "—"}</td>
-                  <td style={tdStyle}>{event.detail_type || event.event_type || "—"}</td>
-                  <td style={{ ...tdStyle, maxWidth: "300px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "'Ubuntu Mono', monospace", fontSize: "12px" }}>
-                    {event.detail?.query_name || event.message || JSON.stringify(event.detail || "").slice(0, 100)}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <div style={{ overflowX: "auto" }}>
+          <table className="dtable">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Severity</th>
+                <th>Query / Source</th>
+                <th>Src IP</th>
+                <th style={{ textAlign: "center" }}>Score</th>
+                <th>Signals</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={6} className="empty">Loading events…</td></tr>
+              ) : rows.length === 0 ? (
+                <tr><td colSpan={6} className="empty">No events match this filter. Pipeline events appear here in real time.</td></tr>
+              ) : (
+                rows.map((e, i) => {
+                  const d = e.detail || {};
+                  const signals = Array.isArray(d.signals) ? d.signals : [];
+                  return (
+                    <tr key={e.event_id || i}>
+                      <td style={{ whiteSpace: "nowrap" }}>
+                        <div className="t-mono" style={{ color: "var(--ink)" }}>{timeAgoISO(e.event_time)}</div>
+                        <div className="faint mono" style={{ fontSize: 10, marginTop: 2 }}>{clockISO(e.event_time)}</div>
+                      </td>
+                      <td>
+                        <span className={sevClass(e.severity)} style={{ color: sevColor(e.severity) }}>
+                          {normSeverity(e.severity)}
+                        </span>
+                      </td>
+                      <td style={{ maxWidth: 320 }}>
+                        <div
+                          className="t-mono"
+                          style={{ color: "var(--accent)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                          title={d.query_name || ""}
+                        >
+                          {d.query_name || e.detail_type || "—"}
+                        </div>
+                        <div className="faint mono" style={{ fontSize: 10.5, marginTop: 2 }}>
+                          {e.source || "—"}
+                        </div>
+                      </td>
+                      <td className="t-mono dim">{d.src_addr || "—"}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {d.score != null ? (
+                          <span
+                            className="t-mono"
+                            style={{ fontWeight: 600, color: sevColor(e.severity), fontSize: 14 }}
+                          >
+                            {d.score}
+                          </span>
+                        ) : <span className="faint">—</span>}
+                      </td>
+                      <td>
+                        <div style={{ display: "flex", gap: 5, flexWrap: "wrap", maxWidth: 280 }}>
+                          {signals.length
+                            ? signals.slice(0, 4).map((s, j) => <span className="chip" key={j}>{s}</span>)
+                            : <span className="faint">—</span>}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 }
-
-const tableWrapperStyle = {
-  background: "white",
-  borderRadius: "8px",
-  overflow: "auto",
-  border: "1px solid #e2e8f0",
-};
-
-const tableStyle = {
-  width: "100%",
-  borderCollapse: "collapse",
-  fontSize: "13px",
-};
-
-const thStyle = {
-  textAlign: "left",
-  padding: "10px 12px",
-  background: "#f8fafc",
-  borderBottom: "1px solid #e2e8f0",
-  color: "#475569",
-  fontWeight: 600,
-  whiteSpace: "nowrap",
-};
-
-const tdStyle = {
-  padding: "8px 12px",
-  borderBottom: "1px solid #f1f5f9",
-  color: "#334155",
-};
-
-const rowEvenStyle = {
-  background: "#f8fafc",
-};
-
-const severityBadge = {
-  padding: "2px 8px",
-  borderRadius: "10px",
-  color: "white",
-  fontSize: "11px",
-  fontWeight: 600,
-  textTransform: "uppercase",
-};
 
 export default Alerts;

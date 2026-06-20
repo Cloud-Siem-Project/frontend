@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import SummaryCard from "../components/SummaryCard";
 import { fetchNodes } from "../api";
-
-function timeAgo(ts) {
-  if (!ts) return "—";
-  const delta = Math.floor(Date.now() / 1000 - ts);
-  if (delta < 60) return `${delta}s ago`;
-  if (delta < 3600) return `${Math.floor(delta / 60)}m ago`;
-  if (delta < 86400) return `${Math.floor(delta / 3600)}h ago`;
-  return `${Math.floor(delta / 86400)}d ago`;
-}
+import { IconNodes } from "../components/icons";
+import { timeAgoSecs } from "../utils/format";
 
 function Nodes() {
   const [nodes, setNodes] = useState([]);
@@ -17,7 +10,6 @@ function Nodes() {
 
   useEffect(() => {
     let mounted = true;
-
     async function load() {
       try {
         const data = await fetchNodes();
@@ -31,7 +23,6 @@ function Nodes() {
         if (mounted) setLoading(false);
       }
     }
-
     load();
     const interval = setInterval(load, 10000);
     return () => { mounted = false; clearInterval(interval); };
@@ -43,87 +34,77 @@ function Nodes() {
 
   return (
     <div>
-      <h1 style={{ marginBottom: "24px" }}>Nodes</h1>
-
-      <div style={summaryCardsWrapperStyle}>
-        <SummaryCard title="Total Nodes" value={totalNodes} />
-        <SummaryCard title="Nodes Online" value={onlineNodes} color="#16a34a" />
-        <SummaryCard title="Nodes Offline" value={offlineNodes} color="#dc2626" />
+      <div className="page-head reveal d1">
+        <div>
+          <div className="eyebrow">Operations / Fleet</div>
+          <h1 className="page-title">Worker Nodes</h1>
+        </div>
+        <span className="faint mono" style={{ fontSize: 11 }}>heartbeat · /api/nodes</span>
       </div>
 
-      <div style={tableCardStyle}>
+      <div className="stat-grid cols-3">
+        <div className="reveal d1">
+          <SummaryCard title="Total Nodes" value={totalNodes} accent="var(--accent)" icon={<IconNodes size={17} />} />
+        </div>
+        <div className="reveal d2">
+          <SummaryCard title="Online" value={onlineNodes} color="var(--ok)" accent="var(--ok)" sub="reporting heartbeat" />
+        </div>
+        <div className="reveal d3">
+          <SummaryCard title="Offline" value={offlineNodes} color={offlineNodes ? "var(--sev-high)" : "var(--ink)"} accent="var(--sev-high)" sub={offlineNodes ? "missed heartbeat" : "none"} />
+        </div>
+      </div>
+
+      <div className="panel bracket reveal d4" style={{ overflow: "hidden" }}>
+        <div className="panel-head">
+          <h3>Fleet Status</h3>
+          <span className="faint mono" style={{ fontSize: 11 }}>{totalNodes} registered</span>
+        </div>
         {loading ? (
-          <div style={{ padding: "24px", color: "#64748b" }}>Loading...</div>
+          <div className="empty">Establishing link…</div>
         ) : nodes.length === 0 ? (
-          <div style={{ padding: "24px", color: "#64748b" }}>
-            No nodes registered. Workers will appear here once they connect to the master.
-          </div>
+          <div className="empty">No nodes registered. Workers appear here once they connect to the master.</div>
         ) : (
-          <>
-            <div style={headerRowStyle}>
-              <div>Node</div>
-              <div>Status</div>
-              <div>Kernel</div>
-              <div>Worker Version</div>
-              <div>Last Seen</div>
-              <div>Registered</div>
-            </div>
-            {nodes.map((node) => (
-              <div key={node.node_id} style={dataRowStyle}>
-                <div>
-                  <div style={{ fontWeight: "600" }}>{node.hostname}</div>
-                  <div style={{ color: "#64748b", marginTop: "4px", fontSize: "12px" }}>{node.ip}</div>
-                </div>
-                <div
-                  style={{
-                    color: node.status === "UP" ? "#16a34a" : "#dc2626",
-                    fontWeight: "500",
-                  }}
-                >
-                  {node.status}
-                </div>
-                <div style={{ color: "#64748b", fontSize: "13px" }}>{node.kernel || "—"}</div>
-                <div style={{ color: "#64748b", fontSize: "13px" }}>{node.worker_version || "—"}</div>
-                <div style={{ color: "#64748b" }}>{timeAgo(node.last_heartbeat)}</div>
-                <div style={{ color: "#64748b", fontSize: "12px" }}>{node.registered_at || "—"}</div>
-              </div>
-            ))}
-          </>
+          <div style={{ overflowX: "auto" }}>
+            <table className="dtable">
+              <thead>
+                <tr>
+                  <th>Node</th>
+                  <th>Status</th>
+                  <th>Kernel</th>
+                  <th>Worker</th>
+                  <th>Last Seen</th>
+                  <th>Registered</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nodes.map((node) => {
+                  const up = node.status === "UP";
+                  return (
+                    <tr key={node.node_id}>
+                      <td>
+                        <div style={{ fontWeight: 600, color: "var(--ink)" }}>{node.hostname || node.node_id}</div>
+                        <div className="mono faint" style={{ fontSize: 11.5, marginTop: 3 }}>{node.ip || "—"}</div>
+                      </td>
+                      <td>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "var(--font-mono)", fontSize: 12, color: up ? "var(--ok)" : "var(--down)" }}>
+                          <span className={up ? "status-dot" : "status-dot down"} />
+                          {node.status || "—"}
+                        </span>
+                      </td>
+                      <td className="t-mono dim">{node.kernel || "—"}</td>
+                      <td className="t-mono dim">{node.worker_version || "—"}</td>
+                      <td className="t-mono dim">{timeAgoSecs(node.last_heartbeat)}</td>
+                      <td className="t-mono faint" style={{ fontSize: 11.5 }}>{node.registered_at || "—"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
   );
 }
-
-const tableCardStyle = {
-  background: "white",
-  borderRadius: "14px",
-  overflow: "hidden",
-  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-  marginTop: "24px",
-};
-
-const headerRowStyle = {
-  display: "grid",
-  gridTemplateColumns: "2fr 1fr 1.5fr 1.2fr 1.2fr 1.5fr",
-  padding: "20px 24px",
-  background: "#f8fafc",
-  borderBottom: "1px solid #e2e8f0",
-  fontWeight: "700",
-};
-
-const dataRowStyle = {
-  display: "grid",
-  gridTemplateColumns: "2fr 1fr 1.5fr 1.2fr 1.2fr 1.5fr",
-  padding: "20px 24px",
-  borderBottom: "1px solid #e2e8f0",
-  alignItems: "center",
-};
-
-const summaryCardsWrapperStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
-  gap: "20px",
-};
 
 export default Nodes;

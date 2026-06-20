@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import NetworkBackground from "../components/NetworkBackground";
+import { IconShield } from "../components/icons";
 
 function Login() {
   const navigate = useNavigate();
@@ -15,7 +16,6 @@ function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       await login(username, password);
       navigate("/dashboard");
@@ -27,103 +27,62 @@ function Login() {
   }
 
   return (
-    <div style={containerStyle}>
+    <div className="login-screen">
       <NetworkBackground />
-      <form onSubmit={handleSubmit} style={formStyle}>
-        <h2 style={{ margin: "0 0 4px", color: "#1e293b", fontFamily: "'Ubuntu Mono', monospace", textAlign: "center", fontSize: "28px" }}>
-          cloud loggers
-        </h2>
-        <p style={{ margin: "0 0 24px", color: "#64748b", fontSize: "13px", textAlign: "center" }}>
-          your eyes on the cloud
-        </p>
+      <div className="login-scrim" />
 
-        {error && <div style={errorStyle}>{error}</div>}
+      <form onSubmit={handleSubmit} className="panel bracket login-card reveal d1">
+        <span className="sweep" />
 
-        <label style={labelStyle}>Username</label>
+        <div className="login-brand">
+          <div className="brand-glyph" style={{ width: 44, height: 44 }}>
+            <IconShield size={24} />
+          </div>
+          <div>
+            <div className="login-title">CLOUDGUARD DNS</div>
+            <div className="login-tag">// threat monitoring console</div>
+          </div>
+        </div>
+
+        <div className="login-divider">
+          <span className="eyebrow">Secure Access</span>
+        </div>
+
+        {error && <div className="login-error mono">⚠ {error}</div>}
+
+        <label className="field-label">Operator ID</label>
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={inputStyle}
+          className="field"
+          placeholder="username"
           autoComplete="username"
           required
         />
 
-        <label style={labelStyle}>Password</label>
+        <label className="field-label">Access Key</label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={inputStyle}
+          className="field"
+          placeholder="••••••••"
           autoComplete="current-password"
           required
         />
 
-        <button type="submit" disabled={loading} style={buttonStyle}>
-          {loading ? "Signing in..." : "Sign in"}
+        <button type="submit" disabled={loading} className="btn btn-accent login-submit">
+          {loading ? "Authenticating…" : "Initialize Session →"}
         </button>
+
+        <div className="login-foot mono">
+          <span>SESSION ENCRYPTED</span>
+          <span style={{ color: "var(--ok)" }}>● LINK READY</span>
+        </div>
       </form>
     </div>
   );
 }
-
-const containerStyle = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minHeight: "100vh",
-  background: "#050505",
-};
-
-const formStyle = {
-  position: "relative",
-  zIndex: 1,
-  background: "rgba(255, 255, 255, 0.95)",
-  padding: "40px",
-  borderRadius: "12px",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
-  width: "360px",
-  display: "flex",
-  flexDirection: "column",
-  backdropFilter: "blur(8px)",
-};
-
-const labelStyle = {
-  fontSize: "14px",
-  fontWeight: 600,
-  color: "#334155",
-  marginBottom: "6px",
-};
-
-const inputStyle = {
-  padding: "10px 12px",
-  borderRadius: "8px",
-  border: "1px solid #cbd5e1",
-  fontSize: "14px",
-  marginBottom: "16px",
-  outline: "none",
-};
-
-const buttonStyle = {
-  padding: "10px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#1e293b",
-  color: "white",
-  fontSize: "14px",
-  fontWeight: 600,
-  cursor: "pointer",
-  marginTop: "8px",
-};
-
-const errorStyle = {
-  background: "#fef2f2",
-  color: "#dc2626",
-  padding: "10px 12px",
-  borderRadius: "8px",
-  fontSize: "13px",
-  marginBottom: "16px",
-  border: "1px solid #fecaca",
-};
 
 export default Login;
