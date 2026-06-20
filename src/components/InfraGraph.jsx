@@ -188,7 +188,7 @@ function InfraGraph({ nodes }) {
   const elements = buildElements(nodes);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "500px", background: "#0a0f1a", borderRadius: "12px", overflow: "hidden" }}>
+    <div style={{ position: "relative", width: "100%", height: "460px", background: "#070b14", overflow: "hidden" }}>
       <CytoscapeComponent
         elements={elements}
         stylesheet={STYLESHEET}
