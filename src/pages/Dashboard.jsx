@@ -106,7 +106,6 @@ function Dashboard() {
       <div className="grid-2">
         {/* severity distribution */}
         <div className="panel bracket reveal d4" style={{ position: "relative", overflow: "hidden" }}>
-          <span className="sweep" />
           <div className="panel-head">
             <h3>Severity Distribution</h3>
             <span className="faint mono" style={{ fontSize: 11 }}>{events.length} events</span>
@@ -121,7 +120,6 @@ function Dashboard() {
                     style={{
                       width: `${(counts[d.key] / maxCount) * 100}%`,
                       background: d.color,
-                      boxShadow: `0 0 10px ${d.color}`,
                     }}
                   />
                 </div>

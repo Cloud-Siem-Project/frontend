@@ -29,8 +29,8 @@ const STYLESHEET = [
       width: 32,
       height: 32,
       "border-width": 2,
-      "border-color": "#1e293b",
-      "text-background-color": "#0a0f1a",
+      "border-color": "#2a2e34",
+      "text-background-color": "#1a1c1f",
       "text-background-opacity": 0.7,
       "text-background-padding": "2px",
       "text-background-shape": "roundrectangle",
@@ -57,8 +57,8 @@ const STYLESHEET = [
     selector: "edge",
     style: {
       width: 1.5,
-      "line-color": "rgba(56, 189, 248, 0.25)",
-      "target-arrow-color": "rgba(56, 189, 248, 0.4)",
+      "line-color": "rgba(150, 158, 170, 0.22)",
+      "target-arrow-color": "rgba(150, 158, 170, 0.38)",
       "target-arrow-shape": "triangle",
       "arrow-scale": 0.8,
       "curve-style": "bezier",
@@ -188,7 +188,7 @@ function InfraGraph({ nodes }) {
   const elements = buildElements(nodes);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "460px", background: "#070b14", overflow: "hidden" }}>
+    <div style={{ position: "relative", width: "100%", height: "460px", background: "#121316", overflow: "hidden" }}>
       <CytoscapeComponent
         elements={elements}
         stylesheet={STYLESHEET}

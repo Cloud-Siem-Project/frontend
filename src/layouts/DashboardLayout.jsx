@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -7,8 +6,8 @@ import {
   IconAlert,
   IconGear,
   IconPower,
-  IconShield,
 } from "../components/icons";
+import centinelLogo from "../assets/centinel.svg";
 
 function SidebarItem({ label, to, icon }) {
   return (
@@ -23,22 +22,11 @@ function SidebarItem({ label, to, icon }) {
   );
 }
 
-function useClock() {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-  return now;
-}
-
 function DashboardLayout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const isAdmin = user?.role === "Admin";
-  const now = useClock();
 
-  const utc = now.toISOString().slice(11, 19);
   const initials = (user?.username || "?").slice(0, 2).toUpperCase();
 
   function handleLogout() {
@@ -51,15 +39,8 @@ function DashboardLayout() {
       {/* ---------- sidebar ---------- */}
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark">
-            <div className="brand-glyph">
-              <IconShield size={19} />
-            </div>
-            <div>
-              <div className="brand-name">CLOUDGUARD</div>
-              <div className="brand-sub">DNS Threat Console</div>
-            </div>
-          </div>
+          <img src={centinelLogo} alt="Centinel" className="brand-logo" />
+          <div className="brand-sub">your eyes on the cloud</div>
         </div>
 
         <nav className="nav-group">
@@ -103,7 +84,6 @@ function DashboardLayout() {
           </div>
 
           <div className="topbar-right">
-            <span className="clock">{utc} UTC</span>
             <div className="user-chip">
               <div className="user-avatar">{initials}</div>
               <div style={{ lineHeight: 1.2 }}>

@@ -44,7 +44,7 @@ function Nodes() {
 
       <div className="stat-grid cols-3">
         <div className="reveal d1">
-          <SummaryCard title="Total Nodes" value={totalNodes} accent="var(--accent)" icon={<IconNodes size={17} />} />
+          <SummaryCard title="Total Nodes" value={totalNodes} accent="var(--accent)" sub="registered fleet" icon={<IconNodes size={17} />} />
         </div>
         <div className="reveal d2">
           <SummaryCard title="Online" value={onlineNodes} color="var(--ok)" accent="var(--ok)" sub="reporting heartbeat" />
