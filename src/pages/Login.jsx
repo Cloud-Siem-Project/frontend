@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import NetworkBackground from "../components/NetworkBackground";
-import { IconShield } from "../components/icons";
+import centinelLogo from "../assets/centinel.svg";
 
 function Login() {
   const navigate = useNavigate();
@@ -33,13 +33,8 @@ function Login() {
 
       <form onSubmit={handleSubmit} className="panel login-card reveal d1">
         <div className="login-brand">
-          <div className="brand-glyph" style={{ width: 44, height: 44 }}>
-            <IconShield size={24} />
-          </div>
-          <div>
-            <div className="login-title">Centinel</div>
-            <div className="login-tag">your eyes on the cloud</div>
-          </div>
+          <img src={centinelLogo} alt="Centinel" className="login-logo" />
+          <div className="login-tag">your eyes on the cloud</div>
         </div>
 
         <div className="login-divider" />

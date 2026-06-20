@@ -95,7 +95,7 @@ function Dashboard() {
           <SummaryCard
             title="Pipeline"
             value="ARMED"
-            color="var(--accent)"
+            color="var(--ink)"
             accent="var(--accent)"
             sub="detect → score → respond"
             icon={<IconShield size={17} />}
