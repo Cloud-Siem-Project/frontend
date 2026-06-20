@@ -303,10 +303,14 @@
   gap: 6px;
 }
 
-/* logo spans the full card width; hover grows it slightly */
+/* logo is ~20% bigger than the card content and straddles the top edge:
+   upper half pokes out above the card, bottom half rests inside it.
+   (margin-top % is relative to container width: -40% ≈ card padding + half
+   the logo height, putting the logo's vertical center on the card's top edge) */
 .login-logo-wrap {
   position: relative;
-  width: 100%;
+  width: 120%;
+  margin-top: -40%;
   display: block;
   cursor: pointer;
   transform: scale(1);
