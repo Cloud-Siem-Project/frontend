@@ -300,18 +300,88 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
+  gap: 6px;
+}
+
+/* logo spans the full card width; hover grows it slightly */
+.login-logo-wrap {
+  position: relative;
+  width: 100%;
+  display: block;
+  cursor: pointer;
+  transform: scale(1);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.login-logo-wrap:hover {
+  transform: scale(1.07);
 }
 .login-logo {
-  height: 60px;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
+  display: block;
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
+  transition: filter 0.4s ease;
 }
+.login-logo-wrap:hover .login-logo {
+  filter: brightness(1.12) drop-shadow(0 0 9px rgba(255, 255, 255, 0.22));
+}
+
+/* the star sits at ~55% / 44.5% of the logo — soft light bloom + sparkle.
+   hidden until hover, then it fills with light and shines. */
+.logo-star {
+  position: absolute;
+  left: 54.9%;
+  top: 44.5%;
+  width: 15%;
+  aspect-ratio: 1 / 1;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5);
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.45) 22%,
+    rgba(255, 255, 255, 0.12) 42%,
+    transparent 62%
+  );
+}
+/* crisp four-point sparkle on top of the bloom */
+.logo-star::before {
+  content: "";
+  position: absolute;
+  inset: 24%;
+  background: #ffffff;
+  clip-path: polygon(
+    50% 0%, 58% 42%, 100% 50%, 58% 58%,
+    50% 100%, 42% 58%, 0% 50%, 42% 42%
+  );
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.85));
+}
+.login-logo-wrap:hover .logo-star {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: star-twinkle 1.6s ease-in-out infinite;
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.78; }
+  50% { opacity: 1; }
+}
+
 .login-tag {
   font-size: 12.5px;
   font-style: italic;
   color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-logo-wrap, .login-logo-wrap:hover { transform: none; }
+  .login-logo-wrap:hover .logo-star { animation: none; }
 }
 .login-divider {
   margin: 24px 0 20px;
