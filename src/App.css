@@ -464,51 +464,40 @@
   background: rgba(255, 255, 255, 0.022);
 }
 
-/* threat activity timeline */
-.tl-legend {
-  display: flex;
-  gap: 14px;
+/* event volume chart (stock-ticker style line + area) */
+.chart-wrap {
+  padding: 16px 16px 12px;
 }
-.tl-key {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--ink-faint);
+.chart-svg {
+  width: 100%;
+  height: 190px;
+  display: block;
 }
-.tl-swatch {
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
+.chart-area {
+  fill: url(#tlFill);
+  stroke: none;
 }
-.tl-wrap {
-  padding: 18px 18px 14px;
+.chart-line {
+  fill: none;
+  stroke: #cdd2da;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
-.tl-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
+.chart-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
 }
-.tl-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: stretch;
-  height: 100%;
-  border-radius: 2px;
-  transition: opacity 0.12s ease;
+.chart-dot {
+  fill: #f2f4f7;
+  stroke: var(--panel);
+  stroke-width: 2;
 }
-.tl-col:hover {
-  opacity: 0.75;
+.chart-dot-halo {
+  fill: rgba(205, 210, 218, 0.25);
 }
-.tl-seg:first-child {
-  border-radius: 0 0 2px 2px;
-}
-.tl-seg:last-child {
-  border-radius: 2px 2px 0 0;
-}
-.tl-axis {
+.chart-axis {
   display: flex;
   justify-content: space-between;
   margin-top: 8px;
