@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import InfraGraph from "../components/InfraGraph";
-import { fetchEvents, fetchNodes } from "../api";
+import ThreatTimeline from "../components/ThreatTimeline";
+import { fetchEvents } from "../api";
 import { normSeverity, sevClass, sevColor, timeAgoISO, clockISO, prettySignal } from "../utils/format";
 
 const FILTERS = [
@@ -11,7 +11,6 @@ const FILTERS = [
 
 function Alerts() {
   const [events, setEvents] = useState([]);
-  const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("ALL");
 
@@ -21,13 +20,6 @@ function Alerts() {
       try {
         const data = await fetchEvents();
         if (mounted) setEvents(data);
-      } catch { /* API may not be available */ }
-      try {
-        const nodeData = await fetchNodes();
-        const list = typeof nodeData === "object" && !Array.isArray(nodeData)
-          ? Object.values(nodeData)
-          : Array.isArray(nodeData) ? nodeData : [];
-        if (mounted) setNodes(list);
       } catch { /* API may not be available */ }
       if (mounted) setLoading(false);
     }
@@ -50,18 +42,14 @@ function Alerts() {
       <div className="page-head reveal d1">
         <div>
           <div className="eyebrow">Operations / Detection</div>
-          <h1 className="page-title">Alerts &amp; Topology</h1>
+          <h1 className="page-title">Alerts</h1>
         </div>
         <span className="faint mono" style={{ fontSize: 11 }}>r53 qlog → score → respond</span>
       </div>
 
-      {/* infra topology */}
-      <div className="panel bracket reveal d2" style={{ overflow: "hidden", marginBottom: 18 }}>
-        <div className="panel-head">
-          <h3>Live Infrastructure Graph</h3>
-          <span className="faint mono" style={{ fontSize: 11 }}>scroll · zoom &nbsp;|&nbsp; drag · pan</span>
-        </div>
-        <InfraGraph nodes={nodes} />
+      {/* threat activity over time */}
+      <div className="reveal d2" style={{ marginBottom: 18 }}>
+        <ThreatTimeline events={events} />
       </div>
 
       {/* event log */}

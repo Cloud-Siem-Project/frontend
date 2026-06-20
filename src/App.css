@@ -464,6 +464,59 @@
   background: rgba(255, 255, 255, 0.022);
 }
 
+/* threat activity timeline */
+.tl-legend {
+  display: flex;
+  gap: 14px;
+}
+.tl-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+}
+.tl-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+.tl-wrap {
+  padding: 18px 18px 14px;
+}
+.tl-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+.tl-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  height: 100%;
+  border-radius: 2px;
+  transition: opacity 0.12s ease;
+}
+.tl-col:hover {
+  opacity: 0.75;
+}
+.tl-seg:first-child {
+  border-radius: 0 0 2px 2px;
+}
+.tl-seg:last-child {
+  border-radius: 2px 2px 0 0;
+}
+.tl-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+}
+
 /* severity distribution bars */
 .dist-row {
   display: grid;
