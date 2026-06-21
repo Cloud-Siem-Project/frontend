@@ -209,6 +209,54 @@
 }
 
 /* ============================================================
+   node registration panel
+   ============================================================ */
+
+.reg-panel {
+  margin-bottom: 22px;
+}
+.reg-body {
+  padding: 18px;
+}
+.reg-name {
+  max-width: 280px;
+  margin-bottom: 18px;
+}
+.reg-cmd-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.reg-copy {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+.cmd-box {
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--bg-0);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  white-space: pre;
+  overflow-x: auto;
+}
+.reg-hint {
+  margin: 12px 0 0;
+  font-size: 11px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+.reg-drop {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* ============================================================
    stat cards
    ============================================================ */
 

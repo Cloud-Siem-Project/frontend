@@ -4,7 +4,6 @@ import {
   IconRadar,
   IconNodes,
   IconAlert,
-  IconGear,
   IconPower,
 } from "../components/icons";
 import centinelLogo from "../assets/centinel.svg";
@@ -25,7 +24,6 @@ function SidebarItem({ label, to, icon }) {
 function DashboardLayout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const isAdmin = user?.role === "Admin";
 
   const initials = (user?.username || "?").slice(0, 2).toUpperCase();
 
@@ -47,14 +45,6 @@ function DashboardLayout() {
           <SidebarItem label="Overview" to="/dashboard" icon={<IconRadar />} />
           <SidebarItem label="Nodes" to="/nodes" icon={<IconNodes />} />
           <SidebarItem label="Alerts" to="/alerts" icon={<IconAlert />} />
-          {isAdmin && (
-            <>
-              <div className="nav-group-label" style={{ paddingTop: 16 }}>
-                Admin
-              </div>
-              <SidebarItem label="Manage Nodes" to="/nodes/manage" icon={<IconGear />} />
-            </>
-          )}
         </nav>
 
         <div className="sidebar-foot">

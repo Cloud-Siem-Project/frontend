@@ -6,6 +6,14 @@ export async function fetchNodes() {
   return res.json();
 }
 
+export async function deregisterNode(nodeId) {
+  const res = await fetch(`${BASE}/api/nodes/${encodeURIComponent(nodeId)}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error(`Deregister failed: ${res.status}`);
+  return res.json().catch(() => ({}));
+}
+
 export async function fetchEvents() {
   const res = await fetch(`${BASE}/api/events`);
   if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`);
