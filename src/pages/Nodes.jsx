@@ -1,32 +1,79 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SummaryCard from "../components/SummaryCard";
-import { fetchNodes } from "../api";
+import { fetchNodes, deregisterNode } from "../api";
 import { IconNodes } from "../components/icons";
 import { timeAgoSecs } from "../utils/format";
+
+function buildCommand(master, name) {
+  const node = name.trim() || "node-01";
+  return [
+    `curl -sSL ${master}/api/worker.py -o /tmp/centinel-agent.py`,
+    `sudo nohup python3 /tmp/centinel-agent.py \\`,
+    `  --master ${master} --node-id ${node} --interval 20 \\`,
+    `  >/var/log/centinel-agent.log 2>&1 &`,
+  ].join("\n");
+}
 
 function Nodes() {
   const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        const data = await fetchNodes();
-        const list = typeof data === "object" && !Array.isArray(data)
+  // register panel
+  const [showReg, setShowReg] = useState(false);
+  const [nodeName, setNodeName] = useState("node-01");
+  const [copied, setCopied] = useState(false);
+
+  // per-node deregister state
+  const [busy, setBusy] = useState(null); // node_id being removed
+  const [error, setError] = useState("");
+
+  const master = typeof window !== "undefined" ? window.location.origin : "";
+  const command = buildCommand(master, nodeName);
+
+  const load = useCallback(async () => {
+    try {
+      const data = await fetchNodes();
+      const list =
+        typeof data === "object" && !Array.isArray(data)
           ? Object.values(data)
           : Array.isArray(data) ? data : [];
-        if (mounted) setNodes(list);
-      } catch {
-        // API may not be reachable
-      } finally {
-        if (mounted) setLoading(false);
-      }
+      setNodes(list);
+    } catch {
+      // API may not be reachable
+    } finally {
+      setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
     load();
     const interval = setInterval(load, 10000);
-    return () => { mounted = false; clearInterval(interval); };
-  }, []);
+    return () => clearInterval(interval);
+  }, [load]);
+
+  async function copyCommand() {
+    try {
+      await navigator.clipboard.writeText(command);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setError("Couldn't copy to clipboard — select and copy manually.");
+    }
+  }
+
+  async function handleDeregister(id) {
+    if (!window.confirm(`Deregister "${id}"? It will disappear until it re-registers.`)) return;
+    setError("");
+    setBusy(id);
+    try {
+      await deregisterNode(id);
+      setNodes((ns) => ns.filter((n) => n.node_id !== id));
+    } catch (e) {
+      setError(`Could not deregister ${id}: ${e.message}`);
+    } finally {
+      setBusy(null);
+    }
+  }
 
   const totalNodes = nodes.length;
   const onlineNodes = nodes.filter((n) => n.status === "UP").length;
@@ -39,8 +86,45 @@ function Nodes() {
           <div className="eyebrow">Operations / Fleet</div>
           <h1 className="page-title">Worker Nodes</h1>
         </div>
-        <span className="faint mono" style={{ fontSize: 11 }}>heartbeat · /api/nodes</span>
+        <button
+          className={showReg ? "btn" : "btn btn-accent"}
+          onClick={() => setShowReg((v) => !v)}
+        >
+          {showReg ? "Close" : "+ Register node"}
+        </button>
       </div>
+
+      {showReg && (
+        <div className="panel bracket reg-panel reveal d1">
+          <div className="panel-head">
+            <h3>Register a node</h3>
+            <span className="faint mono" style={{ fontSize: 11 }}>run on the target EC2 / VM</span>
+          </div>
+          <div className="reg-body">
+            <label className="field-label">Node name</label>
+            <input
+              className="field reg-name"
+              value={nodeName}
+              onChange={(e) => setNodeName(e.target.value)}
+              placeholder="node-01"
+              spellCheck={false}
+            />
+            <div className="reg-cmd-head">
+              <span className="faint mono" style={{ fontSize: 11 }}>install command</span>
+              <button className="btn reg-copy" onClick={copyCommand}>
+                {copied ? "Copied ✓" : "Copy"}
+              </button>
+            </div>
+            <pre className="cmd-box">{command}</pre>
+            <p className="reg-hint mono">
+              The agent registers over HTTPS to this console, then heartbeats every 20s. It will
+              show up below within a few seconds.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {error && <div className="login-error mono" style={{ marginBottom: 16 }}>⚠ {error}</div>}
 
       <div className="stat-grid cols-3">
         <div className="reveal d1">
@@ -62,7 +146,7 @@ function Nodes() {
         {loading ? (
           <div className="empty">Establishing link…</div>
         ) : nodes.length === 0 ? (
-          <div className="empty">No nodes registered. Workers appear here once they connect to the master.</div>
+          <div className="empty">No nodes registered. Use “Register node” to add one.</div>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table className="dtable">
@@ -73,7 +157,7 @@ function Nodes() {
                   <th>Kernel</th>
                   <th>Worker</th>
                   <th>Last Seen</th>
-                  <th>Registered</th>
+                  <th style={{ textAlign: "right" }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -94,7 +178,15 @@ function Nodes() {
                       <td className="t-mono dim">{node.kernel || "—"}</td>
                       <td className="t-mono dim">{node.worker_version || "—"}</td>
                       <td className="t-mono dim">{timeAgoSecs(node.last_heartbeat)}</td>
-                      <td className="t-mono faint" style={{ fontSize: 11.5 }}>{node.registered_at || "—"}</td>
+                      <td style={{ textAlign: "right" }}>
+                        <button
+                          className="btn btn-danger reg-drop"
+                          disabled={busy === node.node_id}
+                          onClick={() => handleDeregister(node.node_id)}
+                        >
+                          {busy === node.node_id ? "Removing…" : "Deregister"}
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
