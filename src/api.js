@@ -14,8 +14,8 @@ export async function deregisterNode(nodeId) {
   return res.json().catch(() => ({}));
 }
 
-export async function fetchEvents() {
-  const res = await fetch(`${BASE}/api/events`);
+export async function fetchEvents({ limit = 200 } = {}) {
+  const res = await fetch(`${BASE}/api/events?limit=${limit}`);
   if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`);
   const data = await res.json();
   return Array.isArray(data) ? data : data.events || [];
