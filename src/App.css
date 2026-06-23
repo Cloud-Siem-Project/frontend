@@ -209,6 +209,123 @@
 }
 
 /* ============================================================
+   search input + event detail drawer
+   ============================================================ */
+
+.search-input {
+  width: 220px;
+  max-width: 40vw;
+  padding: 6px 11px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-0);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.search-input::placeholder { color: var(--ink-faint); }
+.search-input:focus {
+  border-color: var(--line-hi);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(4, 6, 10, 0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: flex-end;
+  animation: fade-in 0.18s ease;
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.drawer {
+  width: 460px;
+  max-width: 92vw;
+  height: 100%;
+  background: var(--panel);
+  border-left: 1px solid var(--line-hi);
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  animation: slide-in 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes slide-in { from { transform: translateX(24px); opacity: 0.6; } to { transform: translateX(0); opacity: 1; } }
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.drawer-close {
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--ink-dim);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.drawer-close:hover { color: var(--ink); border-color: var(--line-hi); }
+.drawer-body {
+  padding: 16px 18px 28px;
+  overflow-y: auto;
+}
+.drawer-when {
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  margin-bottom: 16px;
+}
+.drawer-sec {
+  margin-bottom: 18px;
+}
+.drawer-sec-t {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.kv {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0;
+  align-items: baseline;
+}
+.kv-k {
+  flex: none;
+  width: 120px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+.kv-v {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--ink);
+  word-break: break-word;
+}
+.kv-v.mono { font-family: var(--font-mono); font-size: 12px; }
+.drawer-dl {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+}
+
+/* ============================================================
    node registration panel
    ============================================================ */
 
