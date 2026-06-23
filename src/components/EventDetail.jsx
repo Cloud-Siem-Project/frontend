@@ -97,8 +97,9 @@ function EventDetail({ event, onClose }) {
               <div className="drawer-sec-t">Captured artifact</div>
               <Row label="filename" value={artifact.filename || artifact.name} />
               <Row label="sha256" value={artifact.sha256} />
-              <Row label="size" value={artifact.size} />
+              <Row label="size" value={artifact.size != null ? `${artifact.size} B` : undefined} />
               <Row label="source" value={artifact.source} />
+              <Row label="s3" value={artifact.s3_uri} />
               {artifact.url && (
                 <a className="btn drawer-dl" href={artifact.url} target="_blank" rel="noreferrer">
                   Download for analysis ↓
