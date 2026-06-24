@@ -209,6 +209,103 @@
 }
 
 /* ============================================================
+   node resource cards (dashboard) + gauges (drawer)
+   ============================================================ */
+
+.nm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  padding: 16px 18px;
+}
+.nm-card {
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.nm-card:hover {
+  border-color: var(--line-hi);
+  background: var(--panel-hi);
+  transform: translateY(-1px);
+}
+.nm-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.nm-host {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.nm-seen {
+  font-size: 10px;
+  color: var(--ink-faint);
+}
+.nm-metric { margin-bottom: 9px; }
+.nm-metric-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+.nm-label {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+.nm-val { font-size: 11.5px; }
+.nm-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(150, 158, 170, 0.12);
+  overflow: hidden;
+}
+.nm-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nm-net {
+  margin-top: 10px;
+  font-size: 10.5px;
+  color: var(--ink-dim);
+}
+
+/* gauges in the node drawer */
+.gauge { margin-bottom: 12px; }
+.gauge-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--ink-dim);
+  margin-bottom: 5px;
+}
+.gauge-track {
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(150, 158, 170, 0.12);
+  overflow: hidden;
+}
+.gauge-fill { height: 100%; border-radius: 4px; }
+.gauge-sub {
+  margin-top: 4px;
+  font-size: 10.5px;
+  color: var(--ink-faint);
+}
+
+/* ============================================================
    search input + event detail drawer
    ============================================================ */
 
