@@ -8,6 +8,8 @@ const FILTERS = [
   { key: "ALL", label: "All", match: () => true },
   { key: "HIGH", label: "High", match: (s) => s === "HIGH" },
   { key: "MED", label: "Med", match: (s) => s === "MED" },
+  { key: "LOW", label: "Low", match: (s) => s === "LOW" },
+  { key: "INFO", label: "Info", match: (s) => s === "INFO" },
 ];
 
 // flatten an event into one searchable lowercase string

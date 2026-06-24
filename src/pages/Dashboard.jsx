@@ -1,13 +1,31 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SummaryCard from "../components/SummaryCard";
+import NodeDetail from "../components/NodeDetail";
 import { fetchNodes, fetchEvents } from "../api";
 import { IconNodes, IconAlert, IconPulse, IconShield } from "../components/icons";
-import { normSeverity, sevClass, sevColor, timeAgoISO } from "../utils/format";
+import { normSeverity, sevClass, sevColor, timeAgoISO, timeAgoSecs } from "../utils/format";
+
+function MiniBar({ label, pct }) {
+  if (pct == null) return (
+    <div className="nm-metric"><span className="nm-label">{label}</span><span className="nm-val faint">—</span></div>
+  );
+  const color = pct >= 85 ? "var(--sev-high)" : pct >= 60 ? "var(--sev-med)" : "var(--sev-low)";
+  return (
+    <div className="nm-metric">
+      <div className="nm-metric-top">
+        <span className="nm-label">{label}</span>
+        <span className="nm-val mono" style={{ color }}>{pct}%</span>
+      </div>
+      <div className="nm-track"><div className="nm-fill" style={{ width: `${Math.min(100, pct)}%`, background: color }} /></div>
+    </div>
+  );
+}
 
 function Dashboard() {
   const [nodes, setNodes] = useState([]);
   const [events, setEvents] = useState([]);
+  const [selectedNode, setSelectedNode] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -103,6 +121,38 @@ function Dashboard() {
         </div>
       </div>
 
+      {/* node resources — clickable cards */}
+      <div className="panel bracket reveal d4" style={{ overflow: "hidden", marginBottom: 16 }}>
+        <div className="panel-head">
+          <h3>Node Resources</h3>
+          <span className="faint mono" style={{ fontSize: 11 }}>{nodes.length} nodes · click for detail</span>
+        </div>
+        {nodes.length === 0 ? (
+          <div className="empty">No nodes reporting. Register one from the Nodes page.</div>
+        ) : (
+          <div className="nm-grid">
+            {nodes.map((n) => {
+              const m = n.metrics || {};
+              const up = n.status === "UP";
+              return (
+                <button className="nm-card" key={n.node_id} onClick={() => setSelectedNode(n)}>
+                  <div className="nm-head">
+                    <span className={up ? "status-dot" : "status-dot down"} />
+                    <span className="nm-host">{n.hostname || n.node_id}</span>
+                    <span className="nm-seen mono">{timeAgoSecs(n.last_heartbeat)}</span>
+                  </div>
+                  <MiniBar label="CPU" pct={m.cpu_percent} />
+                  <MiniBar label="RAM" pct={m.mem_percent} />
+                  <div className="nm-net mono">
+                    NET ↓ {m.net_rx_kbps ?? "—"}{m.net_rx_kbps != null ? " kbps" : ""} · ↑ {m.net_tx_kbps ?? "—"}{m.net_tx_kbps != null ? " kbps" : ""}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
       <div className="grid-2">
         {/* severity distribution */}
         <div className="panel bracket reveal d4" style={{ position: "relative", overflow: "hidden" }}>
@@ -161,6 +211,8 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      <NodeDetail node={selectedNode} onClose={() => setSelectedNode(null)} />
     </div>
   );
 }
